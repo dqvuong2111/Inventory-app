@@ -2,10 +2,30 @@ package com.example.inventory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemDao
+import kotlinx.coroutines.launch
 
 class InventoryViewModel (private val itemDao: ItemDao) : ViewModel() {
+    private fun insertItem(item : Item){
+        viewModelScope.launch {
+            itemDao.insert(item)
+        }
+    }
+
+    private fun getNewItemEntry(itemName: String, itemPrice: String, itemCount: String) : Item {
+        return Item(
+            itemName = itemName,
+            itemPrice = itemPrice.toDouble(),
+            quantity = itemCount.toInt()
+        )
+    }
+
+    public fun addNewItem(itemName: String, itemPrice: String, itemCount: String){
+        val newItem = getNewItemEntry(itemName, itemPrice, itemCount)
+        insertItem(newItem)
+    }
 
 }
 
@@ -18,4 +38,5 @@ class InventoryViewModelFactory(private val itemDao : ItemDao) : ViewModelProvid
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
 
